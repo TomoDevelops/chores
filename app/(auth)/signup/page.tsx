@@ -3,7 +3,7 @@ import React from "react";
 
 const Signup = () => {
     return (
-        <div>
+        <div className="flex h-full w-full items-center justify-center">
             <AuthForm formType="signup" />
         </div>
     );
