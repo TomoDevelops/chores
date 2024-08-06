@@ -122,6 +122,8 @@ function AuthForm({ formType }: { formType: "signup" | "signin" }) {
                                 </FormItem>
                             )}
                         />
+                        {/* CAPTCHA Widget */}
+                        <div id="clerk-captcha" />
                         <Button type="submit" className="px-10">
                             {formType === "signup" ? "登録" : "ログイン"}
                         </Button>
