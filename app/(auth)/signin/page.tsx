@@ -5,7 +5,8 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 // components
-import AuthForm from "@/components/custom/AuthForm";
+import AuthForm from "@/components/custom/auth/AuthForm";
+import AuthFormSkeleton from "@/components/custom/auth/AuthFormSkeleton";
 
 const Signin = () => {
     const { isLoaded, isSignedIn } = useSession();
@@ -23,7 +24,7 @@ const Signin = () => {
 
     return (
         <main className="flex min-h-screen w-full items-center justify-center">
-            {!isLoaded && <div>Loading...</div>}
+            {!isLoaded && <AuthFormSkeleton />}
             {showForm && <AuthForm formType="signin" />}
         </main>
     );
