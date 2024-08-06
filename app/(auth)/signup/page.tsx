@@ -1,11 +1,31 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+
+import { useSession } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+// components
 import AuthForm from "@/components/custom/AuthForm";
-import React from "react";
 
 const Signup = () => {
+    const { isLoaded, isSignedIn } = useSession();
+    const router = useRouter();
+
+    const [showForm, setShowForm] = useState(false);
+
+    useEffect(() => {
+        if (isLoaded && !isSignedIn) {
+            setShowForm(true);
+        } else if (isSignedIn) {
+            router.push("/");
+        }
+    }, [isLoaded, isSignedIn, router]);
+
     return (
-        <div className="flex h-full w-full items-center justify-center">
-            <AuthForm formType="signup" />
-        </div>
+        <main className="flex min-h-screen w-full items-center justify-center">
+            {!isLoaded && <div>Loading...</div>}
+            {showForm && <AuthForm formType="signup" />}
+        </main>
     );
 };
 
