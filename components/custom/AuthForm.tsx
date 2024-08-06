@@ -1,18 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { useSignUp } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 
 // Zod
 import { z } from "zod";
 
 // Custom Validation & Config
 import { authSchema, verificationSchema } from "@/validation/auth.schema";
-import { AuthFormConfig } from "@/config/auth/authFormConfig";
+import { useAuthFormConfig } from "@/config/auth/useAuthFormConfig";
+import { useSignInHelper } from "@/lib/auth/useSignInHelper";
 
 // UI
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
     Form,
     FormControl,
@@ -22,74 +23,30 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSignUpHelper } from "@/lib/auth/useSignUpHelper";
 
 function AuthForm({ formType }: { formType: "signup" | "signin" }) {
-    const { isLoaded, signUp, setActive } = useSignUp();
     const [verifying, setVerifying] = useState(false);
-    const router = useRouter();
 
-    const { verificationForm, authForm } = AuthFormConfig();
+    const { verificationForm, authForm } = useAuthFormConfig();
+    const { handleSignIn } = useSignInHelper();
+    const { isLoaded, handleSignUp, handleVerification } = useSignUpHelper();
 
     // onSubmit Handler
     const onSubmit = async (values: z.infer<typeof authSchema>) => {
         if (!isLoaded) return;
 
         formType === "signup"
-            ? await handleSignUp(values)
-            : await handleSignIn();
+            ? await handleSignUp({ values, setVerifying })
+            : await handleSignIn(values);
     };
 
-    // onVerify Handler
     const onVerify = async (values: z.infer<typeof verificationSchema>) => {
         if (!isLoaded) return;
 
-        try {
-            const completeSignUp = await signUp.attemptEmailAddressVerification(
-                {
-                    code: values.verificationCode,
-                }
-            );
-
-            if (completeSignUp.status === "complete") {
-                await setActive({ session: completeSignUp.createdSessionId });
-                router.push("/");
-            } else {
-                console.error(JSON.stringify(completeSignUp, null, 2));
-            }
-        } catch (err: any) {
-            console.error("Error:", JSON.stringify(err, null, 2));
-        }
+        await handleVerification(values);
     };
-
-    const handleSignUp = async (values: z.infer<typeof authSchema>) => {
-        try {
-            await signUp?.create({
-                emailAddress: values.email,
-                password: values.password,
-            });
-
-            await signUp?.prepareEmailAddressVerification({
-                strategy: "email_code",
-            });
-
-            setVerifying(true);
-        } catch (err: any) {
-            console.log(err);
-        }
-        console.log(values);
-    };
-
-    const handleSignIn = async () => {};
 
     // Verification Code Form
     if (verifying) {
