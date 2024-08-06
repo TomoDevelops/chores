@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import Header from "@/components/custom/navigation/Header";
+import Footer from "@/components/custom/navigation/Footer";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const noto = Noto_Sans_JP({ subsets: ["latin"] });
 
@@ -18,7 +21,17 @@ export default function RootLayout({
     return (
         <ClerkProvider>
             <html lang="en">
-                <body className={noto.className}>{children}</body>
+                <body className={noto.className}>
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="light"
+                        disableTransitionOnChange
+                    >
+                        <Header />
+                        {children}
+                        <Footer />
+                    </ThemeProvider>
+                </body>
             </html>
         </ClerkProvider>
     );
