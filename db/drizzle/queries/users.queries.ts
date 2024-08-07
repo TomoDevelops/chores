@@ -47,8 +47,24 @@ export async function updateParentUserInfo(
 }
 
 // Child Users
-export async function createChildUser(data: InsertChildUser) {
-  await db.insert(childUsersTable).values(data);
+export async function createChildUser(
+  data: InsertChildUser,
+  parentClerkUserId: string,
+) {
+  const parentId = await db
+    .select({ id: parentUsersTable.id })
+    .from(parentUsersTable)
+    .where(eq(parentUsersTable.clerkUserId, parentClerkUserId));
+
+  if (parentId.length === 0) {
+    throw new Error("エラーが発生しました。");
+  }
+
+  const childUserData = {
+    parentAccounts: parentId[0].id,
+    ...data,
+  };
+  await db.insert(childUsersTable).values(childUserData);
 }
 
 export async function getChildUserById(id: SelectChildUser["id"]): Promise<
