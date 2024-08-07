@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       await parentUser(requestData.userData);
     }
     if (requestData.type === "child") {
-      await parentUser(requestData.userData);
+      await childUser(requestData.userData, requestData.parentClerkUserId);
     }
   } catch (err: any) {
     console.error(err);
@@ -31,6 +31,9 @@ const parentUser = async (userData: InsertParentUser) => {
   await createParentUser(userData);
 };
 
-const childUser = async (userData: InsertChildUser) => {
-  await createChildUser(userData);
+const childUser = async (
+  userData: InsertChildUser,
+  parentClerkUserId: string,
+) => {
+  await createChildUser(userData, parentClerkUserId);
 };
