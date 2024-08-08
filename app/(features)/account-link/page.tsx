@@ -1,11 +1,16 @@
 import React from "react";
 import { currentUser } from "@clerk/nextjs/server";
+import AccountLinkForm from "@/components/custom/accountLink/AccountLinkForm";
 
 const AccountLinking = async () => {
   const user = await currentUser();
   if (!user) return;
-  console.log(user);
-  return <h1>user</h1>;
+
+  return (
+    <main className="flex min-h-screen w-full items-center justify-center">
+      <AccountLinkForm parentClerkUserId={user.id} />
+    </main>
+  );
 };
 
 export default AccountLinking;
