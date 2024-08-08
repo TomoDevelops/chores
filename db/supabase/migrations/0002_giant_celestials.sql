@@ -1,0 +1,1 @@
+ALTER TABLE "child_users" ADD COLUMN "password" text;

@@ -1,0 +1,1 @@
+ALTER TABLE "child_users" ADD CONSTRAINT "child_users_user_name_unique" UNIQUE("user_name");
