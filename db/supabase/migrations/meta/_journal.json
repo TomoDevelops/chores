@@ -8,6 +8,41 @@
       "when": 1722954982649,
       "tag": "0000_brief_ultimatum",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1723121431845,
+      "tag": "0001_bitter_stone_men",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1723122671540,
+      "tag": "0002_giant_celestials",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1723123251598,
+      "tag": "0003_violet_warbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1723123459293,
+      "tag": "0004_white_energizer",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1723130289304,
+      "tag": "0005_plain_mesmero",
+      "breakpoints": true
     }
   ]
 }
