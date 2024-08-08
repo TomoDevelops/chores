@@ -14,23 +14,31 @@ export const useSignUpHelper = () => {
     setVerifying,
   }: {
     values: z.infer<typeof authSchema>;
-    setVerifying: Dispatch<SetStateAction<boolean>>;
+    setVerifying?: Dispatch<SetStateAction<boolean>>;
   }) => {
+    const signUpByEmail = values.identifier.includes("@");
+    const signUpMethod = signUpByEmail
+      ? { emailAddress: values.identifier }
+      : { username: values.identifier };
+
     try {
       const user = await signUp?.create({
-        emailAddress: values.email,
+        ...signUpMethod,
         password: values.password,
       });
+
+      if (!signUpByEmail) {
+        router.push("/");
+      }
 
       await signUp?.prepareEmailAddressVerification({
         strategy: "email_code",
       });
 
-      setVerifying(true);
+      if (setVerifying) setVerifying(true);
     } catch (err: any) {
       console.log(err);
     }
-    console.log(values);
   };
 
   // onVerify Handler

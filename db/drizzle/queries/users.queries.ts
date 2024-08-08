@@ -61,8 +61,8 @@ export async function createChildUser(
   }
 
   const childUserData = {
-    parentAccounts: parentId[0].id,
     ...data,
+    parentAccounts: parentId[0].id,
   };
   await db.insert(childUsersTable).values(childUserData);
 }

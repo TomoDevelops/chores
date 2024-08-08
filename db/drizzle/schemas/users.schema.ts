@@ -9,10 +9,11 @@ export const parentUsersTable = pgTable("parent_users", {
 
 export const childUsersTable = pgTable("child_users", {
   id: serial("id").primaryKey(),
-  parentAccounts: integer("parent_accounts").references(
-    () => parentUsersTable.id,
-    { onDelete: "cascade" },
-  ),
+  parentAccounts: integer("parent_accounts")
+    .notNull()
+    .references(() => parentUsersTable.id, { onDelete: "cascade" }),
+  userName: text("user_name").notNull().unique(),
+  displayName: text("display_name"),
   accountImage: text("account_image"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
