@@ -6,7 +6,11 @@ import React, { useState } from "react";
 import { z } from "zod";
 
 // Custom Validation & Config
-import { authSchema, verificationSchema } from "@/validation/auth.schema";
+import {
+  signInSchema,
+  signUpSchema,
+  verificationSchema,
+} from "@/validation/auth.schema";
 import { useAuthFormConfig } from "@/config/auth/useAuthFormConfig";
 import { useSignInHelper } from "@/lib/auth/useSignInHelper";
 
@@ -25,18 +29,25 @@ import {
 } from "@/components/ui/form";
 import { useSignUpHelper } from "@/lib/auth/useSignUpHelper";
 import CardFormWrapper from "../shared/CardFormWrapper";
+import FormInput from "../shared/FormInput";
 
 function AuthForm({ formType }: { formType: "signup" | "signin" }) {
   const [verifying, setVerifying] = useState(false);
+  const isSignUp = formType === "signup";
 
-  const { verificationForm, authForm } = useAuthFormConfig();
+  const { verificationForm, authForm } = useAuthFormConfig(isSignUp);
   const { handleSignIn } = useSignInHelper();
   const { isLoaded, handleSignUp, handleVerification } = useSignUpHelper();
 
-  const isSignUp = formType === "signup";
+  const authFormInputs = {
+    identifier: isSignUp ? "メールアドレス" : "メールアドレス/ユーザー名",
+    password: "パスワード",
+  };
 
   // onSubmit Handler
-  const onSubmit = async (values: z.infer<typeof authSchema>) => {
+  const onSubmit = async (
+    values: z.infer<typeof signUpSchema | typeof signInSchema>,
+  ) => {
     if (!isLoaded) return;
 
     isSignUp
@@ -84,7 +95,16 @@ function AuthForm({ formType }: { formType: "signup" | "signin" }) {
     <CardFormWrapper cardHeader={isSignUp ? "アカウント登録" : "ログイン"}>
       <Form key="auth-form" {...authForm}>
         <form onSubmit={authForm.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
+          {Object.entries(authFormInputs).map(([formFieldName, name]) => (
+            <FormInput
+              key={formFieldName}
+              control={authForm.control}
+              formFieldName={formFieldName}
+              labelName={name}
+              inputType={formFieldName === "password" ? "password" : ""}
+            />
+          ))}
+          {/* <FormField
             control={authForm.control}
             name="identifier"
             render={({ field }) => (
@@ -113,7 +133,7 @@ function AuthForm({ formType }: { formType: "signup" | "signin" }) {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           {/* CAPTCHA Widget */}
           <div id="clerk-captcha" />
           <Button type="submit" className="px-10">

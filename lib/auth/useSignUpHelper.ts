@@ -1,5 +1,5 @@
 import { createParentUser } from "@/db/drizzle/queries/users.queries";
-import { authSchema, verificationSchema } from "@/validation/auth.schema";
+import { signUpSchema, verificationSchema } from "@/validation/auth.schema";
 import { useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
@@ -13,7 +13,7 @@ export const useSignUpHelper = () => {
     values,
     setVerifying,
   }: {
-    values: z.infer<typeof authSchema>;
+    values: z.infer<typeof signUpSchema>;
     setVerifying?: Dispatch<SetStateAction<boolean>>;
   }) => {
     const signUpByEmail = values.identifier.includes("@");

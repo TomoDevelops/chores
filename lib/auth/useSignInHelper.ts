@@ -1,4 +1,4 @@
-import { authSchema } from "@/validation/auth.schema";
+import { signUpSchema } from "@/validation/auth.schema";
 import { useSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
@@ -7,7 +7,7 @@ export const useSignInHelper = () => {
   const { isLoaded, signIn, setActive } = useSignIn();
   const router = useRouter();
 
-  const handleSignIn = async (values: z.infer<typeof authSchema>) => {
+  const handleSignIn = async (values: z.infer<typeof signUpSchema>) => {
     try {
       if (values.identifier.includes("@")) {
         const signInAttempt = await signIn?.create({

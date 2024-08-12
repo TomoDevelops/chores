@@ -1,13 +1,14 @@
 import {
-  authSchema,
+  signUpSchema,
   childAccountSchema,
   verificationSchema,
+  signInSchema,
 } from "@/validation/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-export const useAuthFormConfig = () => {
+export const useAuthFormConfig = (isSignUp: boolean = false) => {
   const verificationForm = useForm<z.infer<typeof verificationSchema>>({
     resolver: zodResolver(verificationSchema),
     defaultValues: {
@@ -15,8 +16,8 @@ export const useAuthFormConfig = () => {
     },
   });
 
-  const authForm = useForm<z.infer<typeof authSchema>>({
-    resolver: zodResolver(authSchema),
+  const authForm = useForm<z.infer<typeof signUpSchema | typeof signInSchema>>({
+    resolver: zodResolver(isSignUp ? signUpSchema : signInSchema),
     defaultValues: {
       identifier: "",
       password: "",
