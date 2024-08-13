@@ -45,6 +45,12 @@ const AccountLinkForm = ({
           },
         }),
       });
+      const clerkSignUpValues = {
+        identifier: values.identifier,
+        password: values.password,
+      };
+
+      await handleSignUp(clerkSignUpValues);
     } catch (err: any) {
       console.log(err);
     }
@@ -52,7 +58,7 @@ const AccountLinkForm = ({
   };
 
   return (
-    <CardFormWrapper cardHeader="お子様のアカウントを登録">
+    <CardFormWrapper cardHeader="お子様のアカウントを登録" cardWidth="w-full">
       <Form key="child-account-form" {...childAccountForm}>
         <form
           onSubmit={childAccountForm.handleSubmit(onSubmit)}
