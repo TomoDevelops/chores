@@ -9,13 +9,10 @@ export const useSignUpHelper = () => {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
 
-  const handleSignUp = async ({
-    values,
-    setVerifying,
-  }: {
-    values: z.infer<typeof signUpSchema>;
-    setVerifying?: Dispatch<SetStateAction<boolean>>;
-  }) => {
+  const handleSignUp = async (
+    values: z.infer<typeof signUpSchema>,
+    setVerifying?: Dispatch<SetStateAction<boolean>>,
+  ) => {
     const signUpByEmail = values.identifier.includes("@");
     const signUpMethod = signUpByEmail
       ? { emailAddress: values.identifier }
@@ -28,7 +25,7 @@ export const useSignUpHelper = () => {
       });
 
       if (!signUpByEmail) {
-        router.push("/");
+        return;
       }
 
       await signUp?.prepareEmailAddressVerification({

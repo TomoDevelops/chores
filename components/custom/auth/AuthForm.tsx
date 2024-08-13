@@ -51,7 +51,7 @@ function AuthForm({ formType }: { formType: "signup" | "signin" }) {
     if (!isLoaded) return;
 
     isSignUp
-      ? await handleSignUp({ values, setVerifying })
+      ? await handleSignUp(values, setVerifying)
       : await handleSignIn(values);
   };
 
