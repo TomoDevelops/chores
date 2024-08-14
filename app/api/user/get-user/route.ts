@@ -1,15 +1,12 @@
-import {
-  getChildUserByParentClerkUserId,
-  getParentUserById,
-} from "@/db/drizzle/queries/users.queries";
+import { getUserByClerkUserId } from "@/db/drizzle/queries/users.queries";
 import { SelectUser } from "@/db/drizzle/schemas/users.schema";
 
 export async function POST(request: Request) {
   const { clerkUserId } = await request.json();
 
-  let users;
+  const user = await getUserByClerkUserId(clerkUserId);
 
-  if (!users) {
+  if (!user) {
     return new Response(
       JSON.stringify({ message: "ユーザーが見つかりませんでした。" }),
       {
@@ -21,7 +18,7 @@ export async function POST(request: Request) {
     );
   }
 
-  return new Response(JSON.stringify(users), {
+  return new Response(JSON.stringify(user), {
     status: 200,
     headers: {
       "Content-Type": "application/json",

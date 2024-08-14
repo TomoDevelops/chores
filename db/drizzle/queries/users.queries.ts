@@ -6,6 +6,14 @@ import {
 } from "@/db/drizzle/schemas/users.schema";
 import { and, arrayContains, eq, sql } from "drizzle-orm";
 
+// Shared
+export async function getUserByClerkUserId(clerkUserId: string) {
+  return db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.clerkUserId, clerkUserId));
+}
+
 // Parent Users
 export async function createParentUser(data: InsertUser) {
   await db.insert(usersTable).values(data);
