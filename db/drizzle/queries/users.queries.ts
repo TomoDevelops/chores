@@ -1,21 +1,18 @@
 import { db } from "@/db/drizzle";
 import {
-  InsertChildUser,
-  InsertParentUser,
-  SelectChildUser,
-  SelectParentUser,
-  childUsersTable,
-  parentUsersTable,
+  InsertUser,
+  SelectUser,
+  usersTable,
 } from "@/db/drizzle/schemas/users.schema";
-import { eq, sql } from "drizzle-orm";
+import { and, arrayContains, eq, sql } from "drizzle-orm";
 
 // Parent Users
-export async function createParentUser(data: InsertParentUser) {
-  await db.insert(parentUsersTable).values(data);
+export async function createParentUser(data: InsertUser) {
+  await db.insert(usersTable).values(data);
 }
 
 export async function getParentUserById(
-  clerkUserId: SelectParentUser["clerkUserId"],
+  clerkUserId: SelectUser["clerkUserId"],
 ): Promise<
   Array<{
     id: number;
@@ -25,37 +22,83 @@ export async function getParentUserById(
 > {
   return db
     .select()
-    .from(parentUsersTable)
-    .where(eq(parentUsersTable.clerkUserId, clerkUserId));
+    .from(usersTable)
+    .where(
+      and(
+        eq(usersTable.clerkUserId, clerkUserId),
+        eq(usersTable.accountType, "parent"),
+      ),
+    );
 }
 
-export async function deleteParentUser(
-  clerkUserId: SelectParentUser["clerkUserId"],
-) {
+export async function deleteParentUser(clerkUserId: SelectUser["clerkUserId"]) {
   await db
-    .delete(parentUsersTable)
-    .where(eq(parentUsersTable.clerkUserId, clerkUserId));
+    .delete(usersTable)
+    .where(
+      and(
+        eq(usersTable.clerkUserId, clerkUserId),
+        eq(usersTable.accountType, "parent"),
+      ),
+    );
 }
 
 export async function updateParentUserInfo(
-  clerkUserId: SelectParentUser["clerkUserId"],
+  clerkUserId: SelectUser["clerkUserId"],
 ) {
   await db
-    .update(parentUsersTable)
+    .update(usersTable)
     .set({ accountImage: null })
-    .where(eq(parentUsersTable.clerkUserId, clerkUserId));
+    .where(
+      and(
+        eq(usersTable.clerkUserId, clerkUserId),
+        eq(usersTable.accountType, "parent"),
+      ),
+    );
 }
 
 export async function getParentUserIdByClerkUserId(clerkUserId: string) {
   return db
-    .select({ id: parentUsersTable.id })
-    .from(parentUsersTable)
-    .where(eq(parentUsersTable.clerkUserId, clerkUserId));
+    .select({ id: usersTable.id })
+    .from(usersTable)
+    .where(
+      and(
+        eq(usersTable.clerkUserId, clerkUserId),
+        eq(usersTable.accountType, "parent"),
+      ),
+    );
+}
+
+export async function linkChildUser(
+  parentClerkUserId: string,
+  childUserId: number,
+) {
+  const parentUser = await db
+    .select()
+    .from(usersTable)
+    .where(
+      and(
+        eq(usersTable.clerkUserId, parentClerkUserId),
+        eq(usersTable.accountType, "parent"),
+      ),
+    );
+
+  const linkedAccounts = parentUser[0].linkedAccounts || [];
+  linkedAccounts.push(childUserId);
+
+  await db
+    .update(usersTable)
+    .set({ linkedAccounts: linkedAccounts })
+    .where(
+      and(
+        eq(usersTable.clerkUserId, parentClerkUserId),
+        eq(usersTable.accountType, "parent"),
+      ),
+    );
 }
 
 // Child Users
 export async function createChildUser(
-  data: InsertChildUser,
+  data: InsertUser,
   parentClerkUserId: string,
 ) {
   const parentId = await getParentUserIdByClerkUserId(parentClerkUserId);
@@ -66,18 +109,24 @@ export async function createChildUser(
 
   const childUserData = {
     ...data,
-    parentAccounts: parentId[0].id,
+    linkedAccounts: [parentId[0].id],
   };
-  await db.insert(childUsersTable).values(childUserData);
+  return await db
+    .insert(usersTable)
+    .values(childUserData)
+    .returning({ id: usersTable.id });
 }
 
-export async function getChildUserById(id: SelectChildUser["id"]): Promise<
+export async function getChildUserById(id: SelectUser["id"]): Promise<
   Array<{
     id: number;
     accountImage: string | null;
   }>
 > {
-  return db.select().from(childUsersTable).where(eq(childUsersTable.id, id));
+  return db
+    .select()
+    .from(usersTable)
+    .where(and(eq(usersTable.id, id), eq(usersTable.accountType, "child")));
 }
 
 export async function getChildUserByParentClerkUserId(
@@ -90,30 +139,24 @@ export async function getChildUserByParentClerkUserId(
   }
   return db
     .select()
-    .from(childUsersTable)
-    .where(eq(childUsersTable.parentAccounts, parentId[0].id));
+    .from(usersTable)
+    .where(
+      and(
+        arrayContains(usersTable.linkedAccounts, [parentId[0].id]),
+        eq(usersTable.accountType, "child"),
+      ),
+    );
 }
 
-export async function deleteChildUser(id: SelectChildUser["id"]) {
-  await db.delete(childUsersTable).where(eq(childUsersTable.id, id));
-}
-
-export async function updateChildUserInfo(id: SelectChildUser["id"]) {
+export async function deleteChildUser(id: SelectUser["id"]) {
   await db
-    .update(childUsersTable)
-    .set({ accountImage: null })
-    .where(eq(childUsersTable.id, id));
+    .delete(usersTable)
+    .where(and(eq(usersTable.id, id), eq(usersTable.accountType, "child")));
 }
 
-export async function getUserAccountType(
-  id: SelectChildUser["id"] | SelectParentUser["id"],
-) {
-  const res = await db
-    .select({ accountType: sql<string>`'parent'`.as("accountType") })
-    .from(parentUsersTable)
-    .where(eq(parentUsersTable.id, id));
-
-  const accountType = res[0]?.accountType ? "parent" : "child";
-
-  return accountType;
+export async function updateChildUserInfo(id: SelectUser["id"]) {
+  await db
+    .update(usersTable)
+    .set({ accountImage: null })
+    .where(and(eq(usersTable.id, id), eq(usersTable.accountType, "child")));
 }

@@ -1,5 +1,5 @@
 "use client";
-import { SelectChildUser } from "@/db/drizzle/schemas/users.schema";
+import { SelectUser } from "@/db/drizzle/schemas/users.schema";
 import React, { useEffect, useState } from "react";
 import ProfileCard from "./ProfileCard";
 import ProfileCardSkeleton from "./ProfileCardSkeleton";
@@ -10,7 +10,7 @@ const LinkedAccountWrapper = ({
   parentClerkUserId: string;
 }) => {
   const [loading, setLoading] = useState(true);
-  const [childAccounts, setChildAccounts] = useState<SelectChildUser[]>([]);
+  const [childAccounts, setChildAccounts] = useState<SelectUser[]>([]);
 
   useEffect(() => {
     const fetchLinkedChildAccounts = async () => {

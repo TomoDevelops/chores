@@ -25,7 +25,7 @@ export const useSignUpHelper = () => {
       });
 
       if (!signUpByEmail) {
-        return;
+        return user?.createdUserId;
       }
 
       await signUp?.prepareEmailAddressVerification({
@@ -61,6 +61,7 @@ export const useSignUpHelper = () => {
             accountType: "parent",
             userData: {
               clerkUserId: completeSignUp.createdUserId,
+              accountType: "parent",
             },
           }),
         });

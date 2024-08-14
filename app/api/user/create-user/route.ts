@@ -1,11 +1,9 @@
 import {
   createChildUser,
   createParentUser,
+  linkChildUser,
 } from "@/db/drizzle/queries/users.queries";
-import {
-  InsertChildUser,
-  InsertParentUser,
-} from "@/db/drizzle/schemas/users.schema";
+import { InsertUser } from "@/db/drizzle/schemas/users.schema";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -27,13 +25,11 @@ export async function POST(request: Request) {
   return NextResponse.json(null, { status: 201 });
 }
 
-const parentUser = async (userData: InsertParentUser) => {
+const parentUser = async (userData: InsertUser) => {
   await createParentUser(userData);
 };
 
-const childUser = async (
-  userData: InsertChildUser,
-  parentClerkUserId: string,
-) => {
-  await createChildUser(userData, parentClerkUserId);
+const childUser = async (userData: InsertUser, parentClerkUserId: string) => {
+  const childUserId = await createChildUser(userData, parentClerkUserId);
+  await linkChildUser(parentClerkUserId, childUserId[0].id);
 };
