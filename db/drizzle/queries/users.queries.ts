@@ -7,7 +7,7 @@ import {
   childUsersTable,
   parentUsersTable,
 } from "@/db/drizzle/schemas/users.schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 // Parent Users
 export async function createParentUser(data: InsertParentUser) {
@@ -46,15 +46,19 @@ export async function updateParentUserInfo(
     .where(eq(parentUsersTable.clerkUserId, clerkUserId));
 }
 
+export async function getParentUserIdByClerkUserId(clerkUserId: string) {
+  return db
+    .select({ id: parentUsersTable.id })
+    .from(parentUsersTable)
+    .where(eq(parentUsersTable.clerkUserId, clerkUserId));
+}
+
 // Child Users
 export async function createChildUser(
   data: InsertChildUser,
   parentClerkUserId: string,
 ) {
-  const parentId = await db
-    .select({ id: parentUsersTable.id })
-    .from(parentUsersTable)
-    .where(eq(parentUsersTable.clerkUserId, parentClerkUserId));
+  const parentId = await getParentUserIdByClerkUserId(parentClerkUserId);
 
   if (parentId.length === 0) {
     throw new Error("エラーが発生しました。");
@@ -76,6 +80,20 @@ export async function getChildUserById(id: SelectChildUser["id"]): Promise<
   return db.select().from(childUsersTable).where(eq(childUsersTable.id, id));
 }
 
+export async function getChildUserByParentClerkUserId(
+  parentClerkUserId: string,
+) {
+  const parentId = await getParentUserIdByClerkUserId(parentClerkUserId);
+
+  if (parentId.length === 0) {
+    throw new Error("エラーが発生しました。");
+  }
+  return db
+    .select()
+    .from(childUsersTable)
+    .where(eq(childUsersTable.parentAccounts, parentId[0].id));
+}
+
 export async function deleteChildUser(id: SelectChildUser["id"]) {
   await db.delete(childUsersTable).where(eq(childUsersTable.id, id));
 }
@@ -85,4 +103,17 @@ export async function updateChildUserInfo(id: SelectChildUser["id"]) {
     .update(childUsersTable)
     .set({ accountImage: null })
     .where(eq(childUsersTable.id, id));
+}
+
+export async function getUserAccountType(
+  id: SelectChildUser["id"] | SelectParentUser["id"],
+) {
+  const res = await db
+    .select({ accountType: sql<string>`'parent'`.as("accountType") })
+    .from(parentUsersTable)
+    .where(eq(parentUsersTable.id, id));
+
+  const accountType = res[0]?.accountType ? "parent" : "child";
+
+  return accountType;
 }

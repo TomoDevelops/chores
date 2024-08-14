@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import {
   createChildUser,
   createParentUser,
@@ -12,10 +11,10 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   const requestData = await request.json();
   try {
-    if (requestData.type === "parent") {
+    if (requestData.accountType === "parent") {
       await parentUser(requestData.userData);
     }
-    if (requestData.type === "child") {
+    if (requestData.accountType === "child") {
       await childUser(requestData.userData, requestData.parentClerkUserId);
     }
   } catch (err: any) {

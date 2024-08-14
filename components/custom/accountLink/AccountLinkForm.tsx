@@ -30,13 +30,13 @@ const AccountLinkForm = ({
   //   onSubmit Handler
   const onSubmit = async (values: z.infer<typeof childAccountSchema>) => {
     try {
-      await fetch("/api/create-user", {
+      await fetch("/api/user/create-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          type: "child",
+          accountType: "child",
           parentClerkUserId,
           userData: {
             userName: values.identifier,
@@ -45,6 +45,12 @@ const AccountLinkForm = ({
           },
         }),
       });
+      const clerkSignUpValues = {
+        identifier: values.identifier,
+        password: values.password,
+      };
+
+      await handleSignUp(clerkSignUpValues);
     } catch (err: any) {
       console.log(err);
     }
@@ -52,7 +58,7 @@ const AccountLinkForm = ({
   };
 
   return (
-    <CardFormWrapper cardHeader="お子様のアカウントを登録">
+    <CardFormWrapper cardHeader="お子様のアカウントを登録" cardWidth="w-full">
       <Form key="child-account-form" {...childAccountForm}>
         <form
           onSubmit={childAccountForm.handleSubmit(onSubmit)}

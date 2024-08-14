@@ -3,15 +3,17 @@ import React, { FC } from "react";
 
 interface CardFormWrapperProps {
   cardHeader?: string;
+  cardWidth?: string;
   children: React.ReactNode;
 }
 
 const CardFormWrapper: FC<CardFormWrapperProps> = ({
   cardHeader,
+  cardWidth,
   children,
 }) => {
   return (
-    <Card className="w-3/4 py-8 xl:w-1/4">
+    <Card className={cardWidth ?? `w-3/4 py-8 xl:w-1/2`}>
       {cardHeader && (
         <CardHeader>
           <CardTitle>{cardHeader}</CardTitle>
