@@ -11,7 +11,7 @@ const TabContentWrapper = ({
   children,
 }: TabContentWrapperProps) => {
   return (
-    <TabsContent value={tabContentKey} className="min-h-[450px]">
+    <TabsContent value={tabContentKey} className="mt-8 min-h-[450px]">
       {children}
     </TabsContent>
   );

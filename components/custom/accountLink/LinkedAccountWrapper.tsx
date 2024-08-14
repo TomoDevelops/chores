@@ -34,23 +34,29 @@ const LinkedAccountWrapper = ({
   }, [parentClerkUserId]);
 
   return (
-    <>
+    <ul>
       {loading ? (
         <ProfileCardSkeleton />
       ) : (
-        <ul>
-          {childAccounts.length > 0
-            ? childAccounts.map((childAccount: any) => (
-                <ProfileCard
-                  key={childAccount.id}
-                  displayName={childAccount.displayName}
-                  imageUrl={childAccount.imageUrl}
-                />
-              ))
-            : null}
-        </ul>
+        <li>
+          {childAccounts.length > 0 ? (
+            childAccounts.map((childAccount: any) => (
+              <ProfileCard
+                key={childAccount.id}
+                displayName={childAccount.displayName}
+                imageUrl={childAccount.imageUrl}
+              />
+            ))
+          ) : (
+            <div className="w-full">
+              <p className="text-center">
+                連携されているお子様のアカウントがありません。
+              </p>
+            </div>
+          )}
+        </li>
       )}
-    </>
+    </ul>
   );
 };
 
