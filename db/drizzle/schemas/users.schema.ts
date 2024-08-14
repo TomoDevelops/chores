@@ -1,25 +1,24 @@
-import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
-export const parentUsersTable = pgTable("parent_users", {
+export const accountTypeEnum = pgEnum("account_type", ["parent", "child"]);
+
+export const usersTable = pgTable("users", {
   id: serial("id").primaryKey(),
   clerkUserId: text("clerk_user_id").unique().notNull(),
-  accountImage: text("account_image"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
-
-export const childUsersTable = pgTable("child_users", {
-  id: serial("id").primaryKey(),
-  parentAccounts: integer("parent_accounts")
-    .notNull()
-    .references(() => parentUsersTable.id, { onDelete: "cascade" }),
-  userName: text("user_name").notNull().unique(),
+  accountType: accountTypeEnum("account_type").notNull(),
+  userName: text("user_name").unique(),
+  linkedAccounts: integer("linked_accounts"),
   displayName: text("display_name"),
   accountImage: text("account_image"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export type InsertParentUser = typeof parentUsersTable.$inferInsert;
-export type SelectParentUser = typeof parentUsersTable.$inferSelect;
-
-export type InsertChildUser = typeof childUsersTable.$inferInsert;
-export type SelectChildUser = typeof childUsersTable.$inferSelect;
+export type InsertUser = typeof usersTable.$inferInsert;
+export type SelectUser = typeof usersTable.$inferSelect;
