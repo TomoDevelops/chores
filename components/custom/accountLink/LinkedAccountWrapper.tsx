@@ -15,13 +15,12 @@ const LinkedAccountWrapper = ({
   useEffect(() => {
     const fetchLinkedChildAccounts = async () => {
       setLoading(true);
-      const response = await fetch("/api/user/get-user", {
+      await fetch("/api/user/get-child-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          accountType: "child",
           parentClerkUserId,
         }),
       })
@@ -35,18 +34,23 @@ const LinkedAccountWrapper = ({
   }, [parentClerkUserId]);
 
   return (
-    <ul>
+    <ul className="flex flex-col gap-4">
       {loading ? (
-        <ProfileCardSkeleton />
+        <>
+          <ProfileCardSkeleton />
+          <ProfileCardSkeleton />
+          <ProfileCardSkeleton />
+        </>
       ) : (
-        <li>
+        <>
           {childAccounts.length > 0 ? (
             childAccounts.map((childAccount: any) => (
-              <ProfileCard
-                key={childAccount.id}
-                displayName={childAccount.displayName}
-                imageUrl={childAccount.imageUrl}
-              />
+              <li key={childAccount.id}>
+                <ProfileCard
+                  displayName={childAccount.displayName}
+                  imageUrl={childAccount.imageUrl}
+                />
+              </li>
             ))
           ) : (
             <div className="w-full">
@@ -55,7 +59,7 @@ const LinkedAccountWrapper = ({
               </p>
             </div>
           )}
-        </li>
+        </>
       )}
     </ul>
   );
