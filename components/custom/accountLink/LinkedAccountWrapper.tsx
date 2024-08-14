@@ -15,12 +15,13 @@ const LinkedAccountWrapper = ({
   useEffect(() => {
     const fetchLinkedChildAccounts = async () => {
       setLoading(true);
-      const response = await fetch("/api/get-child-user", {
+      const response = await fetch("/api/user/get-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          accountType: "child",
           parentClerkUserId,
         }),
       })

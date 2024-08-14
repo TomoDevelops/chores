@@ -30,13 +30,13 @@ const AccountLinkForm = ({
   //   onSubmit Handler
   const onSubmit = async (values: z.infer<typeof childAccountSchema>) => {
     try {
-      await fetch("/api/create-user", {
+      await fetch("/api/user/create-user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          type: "child",
+          accountType: "child",
           parentClerkUserId,
           userData: {
             userName: values.identifier,

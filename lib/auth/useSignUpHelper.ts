@@ -52,13 +52,13 @@ export const useSignUpHelper = () => {
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
         // Save new user data to database
-        await fetch("/api/create-user", {
+        await fetch("/api/user/create-user", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            type: "parent",
+            accountType: "parent",
             userData: {
               clerkUserId: completeSignUp.createdUserId,
             },

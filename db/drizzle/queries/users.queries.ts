@@ -7,7 +7,7 @@ import {
   childUsersTable,
   parentUsersTable,
 } from "@/db/drizzle/schemas/users.schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 // Parent Users
 export async function createParentUser(data: InsertParentUser) {
@@ -103,4 +103,17 @@ export async function updateChildUserInfo(id: SelectChildUser["id"]) {
     .update(childUsersTable)
     .set({ accountImage: null })
     .where(eq(childUsersTable.id, id));
+}
+
+export async function getUserAccountType(
+  id: SelectChildUser["id"] | SelectParentUser["id"],
+) {
+  const res = await db
+    .select({ accountType: sql<string>`'parent'`.as("accountType") })
+    .from(parentUsersTable)
+    .where(eq(parentUsersTable.id, id));
+
+  const accountType = res[0]?.accountType ? "parent" : "child";
+
+  return accountType;
 }
