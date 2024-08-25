@@ -1,30 +1,12 @@
-import {
-  getChildUserByParentClerkUserId,
-  getParentUserById,
-  getUserAccountType,
-} from "@/db/drizzle/queries/users.queries";
-import {
-  SelectChildUser,
-  SelectParentUser,
-} from "@/db/drizzle/schemas/users.schema";
-
-type UserWithAccountType =
-  | (SelectChildUser & { userAccountType: string })
-  | (SelectParentUser & { userAccountType: string });
+import { getUserByClerkUserId } from "@/db/drizzle/queries/users.queries";
+import { SelectUser } from "@/db/drizzle/schemas/users.schema";
 
 export async function POST(request: Request) {
-  const { parentClerkUserId, accountType } = await request.json();
+  const { clerkUserId } = await request.json();
 
-  let users;
+  const user = await getUserByClerkUserId(clerkUserId);
 
-  if (accountType === "parent") {
-    users = await getParentUser(parentClerkUserId);
-  }
-  if (accountType === "child") {
-    users = await getChildUser(parentClerkUserId);
-  }
-
-  if (!users) {
+  if (!user) {
     return new Response(
       JSON.stringify({ message: "ユーザーが見つかりませんでした。" }),
       {
@@ -36,22 +18,10 @@ export async function POST(request: Request) {
     );
   }
 
-  for (const user of users as UserWithAccountType[]) {
-    user.userAccountType = await getUserAccountType(user.id);
-  }
-
-  return new Response(JSON.stringify(users), {
+  return new Response(JSON.stringify(user), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
     },
   });
 }
-
-const getParentUser = async (userId: string) => {
-  return await getParentUserById(userId);
-};
-
-const getChildUser = async (parentUserId: string) => {
-  return await getChildUserByParentClerkUserId(parentUserId);
-};

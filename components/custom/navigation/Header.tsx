@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 // Auth
 import { useSession } from "@clerk/nextjs";
@@ -13,8 +13,33 @@ import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 
 const Header = () => {
-  const { isLoaded, isSignedIn } = useSession();
+  const { isLoaded, isSignedIn, session } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [userAccountType, setUserAccountType] = useState("");
   const { handleSignOut } = useSignOutHelper();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!session) return;
+      setLoading(true);
+      const userId = session.user?.id;
+      await fetch("/api/user/get-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clerkUserId: userId,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => setUserAccountType(data[0].accountType))
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    };
+
+    fetchUser();
+  }, [userAccountType, session]);
 
   const onSignOut = () => {
     handleSignOut();
@@ -28,7 +53,9 @@ const Header = () => {
           {isLoaded ? (
             isSignedIn ? (
               <>
-                <Link href={"/account-link"}>アカウント連携</Link>
+                {userAccountType === "parent" ? (
+                  <Link href={"/account-link"}>アカウント連携</Link>
+                ) : null}
                 <Link href={"/"}>Feature 2</Link>
                 <Link href={"/"}>Feature 3</Link>
                 <ProfileAvatar avatarLink="/profile" signOut={onSignOut} />

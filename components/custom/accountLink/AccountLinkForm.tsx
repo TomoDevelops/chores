@@ -30,6 +30,13 @@ const AccountLinkForm = ({
   //   onSubmit Handler
   const onSubmit = async (values: z.infer<typeof childAccountSchema>) => {
     try {
+      const clerkSignUpValues = {
+        identifier: values.identifier,
+        password: values.password,
+      };
+
+      const createdUserId = await handleSignUp(clerkSignUpValues);
+
       await fetch("/api/user/create-user", {
         method: "POST",
         headers: {
@@ -39,18 +46,13 @@ const AccountLinkForm = ({
           accountType: "child",
           parentClerkUserId,
           userData: {
+            clerkUserId: createdUserId,
             userName: values.identifier,
             displayName: values.displayName,
-            password: values.password,
+            accountType: "child",
           },
         }),
       });
-      const clerkSignUpValues = {
-        identifier: values.identifier,
-        password: values.password,
-      };
-
-      await handleSignUp(clerkSignUpValues);
     } catch (err: any) {
       console.log(err);
     }

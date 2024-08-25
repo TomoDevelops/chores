@@ -1,1 +1,0 @@
-ALTER TABLE "child_users" DROP COLUMN IF EXISTS "password";
