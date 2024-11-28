@@ -1,4 +1,5 @@
 "use client";
+
 import { SelectUser } from "@/db/drizzle/schemas/users.schema";
 import React, { useEffect, useState } from "react";
 import ProfileCard from "./ProfileCard";
@@ -54,9 +55,7 @@ const LinkedAccountWrapper = ({
             ))
           ) : (
             <div className="w-full">
-              <p className="text-center">
-                連携されているお子様のアカウントがありません。
-              </p>
+              <p className="text-center">お子様のアカウントがありません。</p>
             </div>
           )}
         </>
