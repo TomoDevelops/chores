@@ -54,9 +54,10 @@ const AccountLinkForm = ({
         }),
       });
     } catch (err: any) {
-      console.log(err);
+      console.error(err);
+    } finally {
+      router.refresh();
     }
-    router.push("/");
   };
 
   return (
