@@ -3,17 +3,21 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const ButtonLink = ({
-    buttonText,
-    buttonLink,
+  buttonText,
+  buttonLink,
+  onClick,
 }: {
-    buttonText: string;
-    buttonLink: string;
+  buttonText: string;
+  buttonLink: string;
+  onClick?: () => void;
 }) => {
-    return (
-        <Button asChild>
-            <Link href={buttonLink}>{buttonText}</Link>
-        </Button>
-    );
+  return (
+    <Button asChild>
+      <Link href={buttonLink} onClick={onClick}>
+        {buttonText}
+      </Link>
+    </Button>
+  );
 };
 
 export default ButtonLink;

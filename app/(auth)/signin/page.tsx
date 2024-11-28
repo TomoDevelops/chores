@@ -23,7 +23,7 @@ const Signin = () => {
   }, [isLoaded, isSignedIn, router]);
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center">
+    <main className="my-20 flex w-full items-center justify-center">
       {!isLoaded && <AuthFormSkeleton />}
       {showForm && <AuthForm formType="signin" />}
     </main>

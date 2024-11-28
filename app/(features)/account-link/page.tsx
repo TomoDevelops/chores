@@ -8,13 +8,13 @@ import TabContentWrapper from "@/components/custom/shared/tabs/TabContentWrapper
 const AccountLinking = async () => {
   const user = await currentUser();
   const tabHeader = {
-    "account-create": "お子様のアカウントの登録",
-    "account-list": "連携済のお子様のアカウント",
+    "account-create": "お子様の登録",
+    "account-list": "お子様のアカウント",
   };
   if (!user) return;
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center">
+    <main className="my-20 flex w-full items-center justify-center">
       <TabWrapper tabHeader={tabHeader}>
         <TabContentWrapper tabContentKey="account-create">
           <AccountLinkForm parentClerkUserId={user.id} />
