@@ -20,8 +20,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useUserIdStore } from "@/stores/user-id-store";
 
 const Header = () => {
+  const { setUserId } = useUserIdStore();
   const { isLoaded, isSignedIn, session } = useSession();
   const [loading, setLoading] = useState(true);
   const [userAccountType, setUserAccountType] = useState("");
@@ -30,9 +32,9 @@ const Header = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (!session) return;
       setLoading(true);
-      const userId = session.user?.id;
+      const userId = session?.user.id ?? null;
+      setUserId(userId);
       await fetch("/api/user/get-user", {
         method: "POST",
         headers: {
@@ -48,7 +50,7 @@ const Header = () => {
         .finally(() => setLoading(false));
     };
 
-    fetchUser();
+    if (session) fetchUser();
   }, [userAccountType, session]);
 
   const onSignOut = () => {
@@ -67,7 +69,7 @@ const Header = () => {
                 {userAccountType === "parent" ? (
                   <Link href={"/account-link"}>アカウント連携</Link>
                 ) : null}
-                <Link href={"/"}>Feature 2</Link>
+                <Link href={"/chores-settings"}>お手伝い管理</Link>
                 <Link href={"/"}>Feature 3</Link>
                 <ProfileDropdown signOut={onSignOut} />
               </>
@@ -102,8 +104,11 @@ const Header = () => {
                           アカウント連携
                         </Link>
                       ) : null}
-                      <Link href={"/"} onClick={() => setSheetOpen(false)}>
-                        Feature 2
+                      <Link
+                        href={"/chores-settings"}
+                        onClick={() => setSheetOpen(false)}
+                      >
+                        お手伝い管理
                       </Link>
                       <Link href={"/"} onClick={() => setSheetOpen(false)}>
                         Feature 3
