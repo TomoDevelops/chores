@@ -4,14 +4,20 @@ import React from "react";
 interface TabContentWrapperProps {
   tabContentKey: string;
   children: React.ReactNode;
+  forceMount?: boolean;
 }
 
 const TabContentWrapper = ({
   tabContentKey,
   children,
+  forceMount = false,
 }: TabContentWrapperProps) => {
   return (
-    <TabsContent value={tabContentKey} className="mt-8 min-h-[450px]">
+    <TabsContent
+      forceMount={forceMount ? true : undefined}
+      value={tabContentKey}
+      className="mt-8 min-h-[450px]"
+    >
       {children}
     </TabsContent>
   );
